@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bắn Thuyền</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap');
+
+body {
+    font-family: 'Be Vietnam Pro', sans-serif;
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    position: relative;
+    overflow: hidden;
+    background: url('Light Blue Pirate Birthday Poster.png') no-repeat center center fixed;
+    background-size: cover; 
+    padding-top: 120px; /* ĐÃ TĂNG TỪ 100px LÊN 120px ĐỂ DỊCH BẢNG LÊN */
+}
+
+.container {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 100px;
+    position: relative;
+    z-index: 5;
+}
+
+.divider {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, transparent, #9ac7e5, transparent);
+    transform: translateX(-50%);
+}
+
+.board-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+h2 {
+    margin-bottom: 20px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    font-size: 28px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+.board {
+    display: grid;
+    grid-template-columns: 45px repeat(5, 70px);
+    grid-template-rows: 45px repeat(5, 70px);
+    gap: 6px;
+    background: #cde8f8;
+    padding: 20px;
+    border-radius: 25px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+}
+
+.label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+    color: #444;
+}
+
+.cell {
+    background: white;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.16s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    font-weight: 800;
+    position: relative;
+}
+
+.cell:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+}
+
+/* Trạng thái ô đã trả lời quiz */
+.cell[data-answered="true"] {
+    cursor: pointer;
+    background: white !important;
+}
+.cell[data-answered="true"]:hover {
+    transform: scale(1.05);
+}
+
+/* Dấu tròn trúng/trượt */
+.cell.hit::before, .cell.miss::before {
+    content: '';
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    z-index: 2;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+.cell.hit::before { background: #b30000; }
+.cell.miss::before { background: #0056cc; }
+.cell.hit, .cell.miss {
+    background: white !important;
+    color: transparent;
+}
+
+/* Popup chọn màu */
+.popup {
+    position: absolute;
+    background: white;
+    border-radius: 15px;
+    padding: 15px;
+    display: flex;
+    gap: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    z-index: 10;
+}
+.color-btn {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+}
+.color-btn.red { background: #b30000; }
+.color-btn.blue { background: #0056cc; }
+
+/* Quiz overlay */
+.quiz-popup {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.6);
+    z-index: 50;
+}
+.quiz-box {
+    width: 750px; 
+    background: #fff9f3;
+    border-radius: 25px;
+    padding: 40px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+    text-align: center;
+    transition: transform 0.1s ease-in-out;
+}
+@keyframes shake-and-celebrate {
+    0% { transform: scale(1) rotate(0deg); }
+    20% { transform: scale(1.04) rotate(-1.5deg); }
+    40% { transform: scale(1.04) rotate(1.5deg); }
+    60% { transform: scale(1.04) rotate(-1.5deg); }
+    80% { transform: scale(1.04) rotate(1.5deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}
+.quiz-box.celebrate {
+    animation: shake-and-celebrate 0.5s;
+}
+.quiz-question {
+    font-weight: 700;
+    margin-bottom: 30px;
+    font-size: 22px;
+    text-align: justify;
+    line-height: 1.5;
+}
+.option {
+    background: #f0e2d2;
+    padding: 18px;
+    border-radius: 15px;
+    margin: 12px 0;
+    cursor: pointer;
+    transition: 0.14s;
+    text-align: left;
+    font-size: 18px;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.option:hover { 
+    transform: translateY(-3px);
+    background: #e0d2c2;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+.option.correct {
+    background: #d4f5d6;
+    border: 3px solid #8cd179;
+    font-weight: 700;
+}
+.option.wrong {
+    background: #ffd7d7;
+    border: 3px solid #ff7b7b;
+    font-weight: 700;
+}
+.fitb-input {
+    width: 90%;
+    padding: 15px;
+    margin: 20px 0;
+    border: 3px solid #ccc;
+    border-radius: 12px;
+    font-size: 20px;
+    text-align: center;
+    font-weight: 600;
+}
+.fitb-feedback {
+    margin-top: 25px;
+    font-weight: 800;
+    font-size: 26px;
+    display: block;
+}
+.fitb-btn {
+    padding: 15px 30px;
+    border: none;
+    border-radius: 12px;
+    background: #0056cc;
+    color: white;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: 0.14s;
+    font-weight: 700;
+    font-size: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+.fitb-btn:hover { background: #0044a0; }
+
+.back-btn {
+    padding: 15px 30px;
+    border: none;
+    border-radius: 12px;
+    background: #6c757d;
+    color: white;
+    cursor: pointer;
+    margin-top: 30px;
+    font-size: 20px;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: background 0.14s;
+}
+.back-btn:hover { background: #5a6268; }
+
+/* --- RULE BUTTON & POPUP STYLES --- */
+.action-btn {
+    padding: 12px 25px;
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    background: #6c757d; 
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: all 0.2s ease;
+}
+.action-btn:hover {
+    background: #5a6268;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.4);
+}
+.action-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Container bọc các nút ở góc phải trên cùng */
+#controls-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    flex-direction: column; /* Xếp dọc */
+    gap: 10px; /* Khoảng cách giữa các nút */
+    z-index: 60;
+}
+
+.rule-popup {
+    position: fixed;
+    inset: 0;
+    display: none; 
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.7);
+    z-index: 100;
+}
+
+.rule-box {
+    width: 800px; 
+    max-height: 65vh; 
+    overflow-y: hidden; 
+    background: #fff9f3; 
+    border-radius: 25px; 
+    padding: 40px; 
+    box-shadow: 0 15px 40px rgba(0,0,0,0.5);
+    color: #212529; 
+    text-align: center;
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+.rule-box::-webkit-scrollbar {
+    display: none;
+}
+
+.rule-content {
+    font-size: 17px; 
+    font-weight: 500; 
+    line-height: 1.7;
+    text-align: justify;
+    margin-bottom: 25px;
+    padding: 0 10px; 
+}
+
+.rule-box h3 {
+    color: #b30000; 
+    font-size: 24px;
+    margin-top: 0;
+    border-bottom: 2px solid #ced4da; 
+    padding-bottom: 10px;
+    font-weight: 800; 
+}
+
+.rule-box .section-title {
+    color: #b30000;
+    font-weight: 800;
+    font-size: 20px;
+    display: block; 
+    margin-top: 15px;
+    margin-bottom: 5px;
+    text-align: left;
+}
+
+.rule-box ol, .rule-box ul {
+    text-align: justify;
+    padding-left: 30px;
+    font-size: 17px;
+    font-weight: 500;
+}
+
+.dot {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+.dot.red { background-color: #b30000; }
+.dot.blue { background-color: #0056cc; }
+
+/* --- New Ship Placement Styles --- */
+.ship-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: absolute;
+    top: 100px;
+    left: 20px;
+    z-index: 10;
+}
+
+.ship {
+    background: #808080;
+    border-radius: 5px;
+    cursor: grab;
+    display: flex;
+}
+
+.ship.horizontal {
+    flex-direction: row;
+}
+
+.ship.vertical {
+    flex-direction: column;
+}
+
+.ship-unit {
+    width: 70px;
+    height: 70px;
+    background: #808080;
+    border: 1px solid #000;
+    box-sizing: border-box;
+}
+
+.cell.ship {
+    background: #808080 !important;
+}
+
+#show-ships-popup {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.6);
+    z-index: 50;
+}
+
+.show-ships-box {
+    background: #fff;
+    padding: 30px; /* Tăng padding */
+    border-radius: 20px; /* Bo tròn hơn */
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* THAY ĐỔI MÀU NÚT BẮN THUYỀN VÀ FONT */
+.show-ships-box button {
+    margin: 10px;
+    padding: 15px 25px; /* Tăng kích thước nút */
+    background: #b30000; /* Màu đỏ sẫm */
+    color: white;
+    border: none;
+    border-radius: 15px; /* Bo tròn hơn */
+    cursor: pointer;
+    font-size: 18px; /* Tăng cỡ chữ */
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: background 0.1s;
+}
+
+.show-ships-box button:hover {
+    background: #8e0000; /* Đỏ đậm hơn khi hover */
+}
+</style>
+</head>
+<body>
+    <div id="controls-container">
+        <button id="ruleBtn" class="action-btn">Luật Chơi</button>
+        <button id="placeShipsBtn" class="action-btn">Đặt Thuyền</button>
+        <button id="showShipsBtn" class="action-btn">Hiện Thuyền</button>
+    </div>
+
+    <div class="container">
+        <div class="divider"></div>
+        <div class="board-container">
+            <h2 style="color:#b30000">BẢNG NHÓM 1</h2>
+            <div class="board" id="board1"></div>
+        </div>
+        <div class="board-container">
+            <h2 style="color:#0056cc">BẢNG NHÓM 2</h2>
+            <div class="board" id="board2"></div>
+        </div>
+    </div>
+
+    <div id="popup" class="popup" style="display:none;">
+        <button class="color-btn red" title="Đánh dấu Trúng"></button>
+        <button class="color-btn blue" title="Đánh dấu Trượt"></button>
+    </div>
+
+    <div id="rulePopup" class="rule-popup">
+        <div class="rule-box" role="dialog" aria-modal="true">
+            <h3>⚓ LUẬT CHƠI BẮN THUYỀN ⚓</h3>
+            <div class="rule-content">
+                <span class="section-title">LUẬT CHƠI:</span>
+                <ol>
+                    <li>Mỗi đội có 3 thuyền: 1 thuyền dài 3 ô, 1 thuyền dài 2 ô và 1 thuyền dài 1 ô.</li>
+                    <li>Hai đội đặt thuyền bí mật trên bảng ô vuông.</li>
+                    <li>Lượt chơi: mỗi đội bắn vào tọa độ trên bảng đối phương.</li>
+                    <ul>          
+                        <li>Trúng thuyền: đánh dấu <span class="dot red"></span>.</li>
+                        <li>Không trúng: đánh dấu <span class="dot blue"></span>.</li>
+                    </ul>
+                    <li>Đội nào bắn chìm hết thuyền của đối phương trước là <strong style="color: #0056cc;">đội thắng</strong>.</li>
+                </ol>
+                <span class="section-title">CÁCH TÍNH ĐIỂM:</span>
+                <ul>
+                    <li>Mỗi người trả lời đúng câu hỏi được <strong style="color: #0056cc;">+1 điểm</strong>.</li>
+                    <li>Đội nào bắn chìm toàn bộ thuyền đối phương trước sẽ được <strong style="color: #0056cc;">+2 điểm</strong> cho <strong>cả đội</strong>.</li>
+                </ul>
+            </div>
+            <button id="closeRuleBtn" class="back-btn" style="background: #6c757d;">Đóng</button>
+        </div>
+    </div>
+
+    <div id="quizPopup" class="quiz-popup">
+        <div id="quizBox" class="quiz-box" role="dialog" aria-modal="true">
+            <div id="quizQuestion" class="quiz-question"></div>
+            <div id="quizContent"></div>
+            <button id="backBtn" class="back-btn">Quay lại bảng</button>
+        </div>
+    </div>
+
+    <div id="show-ships-popup" class="quiz-popup">
+        <div class="show-ships-box">
+            <h3>Chọn hiển thị thuyền</h3>
+            <button id="show-team1">Hiện thuyền Team 1</button>
+            <button id="show-team2">Hiện thuyền Team 2</button>
+            <button id="show-both">Hiện cả hai</button>
+            <button id="hide-all-ships">Ẩn tất cả</button>
+        </div>
+    </div>
+
+<script>
+/* --- DATA CÂU HỎI TỔNG HỢP --- */
+
+// 25 CÂU HỎI BẢNG NHÓM 1 (A1 - E5) - Đã cập nhật ở yêu cầu trước
+const team1Questions = [
+    { type: 'mc', q: "Cương lĩnh 1991 được thông qua tại Đại hội Đảng toàn quốc lần thứ mấy?", options: ["Đại hội VI","Đại hội VII","Đại hội VIII","Đại hội V"], ans: 1 },
+    { type: 'mc', q: "Phát biểu nào sai khi nói về bối cảnh Việt Nam trước Đại hội VII?", options: ["Đổi mới đã bắt đầu từ 1986 nhưng còn nhiều khó khăn.","Mỹ đã bình thường hóa quan hệ với Việt Nam.","Lạm phát từng lên tới 3 con số.","Kinh tế thiếu lương thực, nợ nước ngoài cao."], ans: 1 },
+    { type: 'mc', q: "Phát biểu nào sai về bối cảnh ra đời của Cương lĩnh 1991?", options: ["Chủ nghĩa xã hội thế giới khủng hoảng nghiêm trọng.","Liên Xô và Đông Âu tan rã.","Việt Nam đang trong thời kỳ chống Pháp.","Công cuộc Đổi mới đã tiến hành hơn 5 năm nhưng còn nhiều khó khăn."], ans: 2 },
+    { type: 'mc', q: "Tên đầy đủ của văn kiện Cương lĩnh năm 1991 là:", options: ["Cương lĩnh dân tộc dân chủ nhân dân","Cương lĩnh xây dựng chủ nghĩa xã hội ở miền Bắc","Cương lĩnh xây dựng đất nước trong thời kỳ quá độ lên chủ nghĩa xã hội","Cương lĩnh về công nghiệp hóa – hiện đại hóa đất nước"], ans: 2 },
+    { type: 'mc', q: "Đặc trưng chính trị của xã hội XHCN theo Cương lĩnh 1991 là:", options: ["Xã hội do một cá nhân lãnh đạo tuyệt đối","Xã hội đa đảng cạnh tranh","Xã hội mà nhân dân lao động làm chủ","Xã hội quân chủ lập hiến"], ans: 2 },
+    { type: 'mc', q: "Đặc trưng kinh tế trong Cương lĩnh 1991 là:", options: ["Kinh tế tự cung tự cấp","Kinh tế thị trường tự do hoàn toàn","Nền kinh tế phát triển cao dựa trên lực lượng sản xuất hiện đại và chế độ công hữu tư liệu sản xuất chủ yếu","Xóa bỏ mọi hình thức sở hữu tư nhân"], ans: 2 },
+    { type: 'mc', q: "Nội dung nào dưới đây phản ánh đúng quan điểm về văn hóa trong Cương lĩnh 1991?", options: ["Văn hóa nhập khẩu phương Tây","Văn hóa phong kiến cải biên","Văn hóa tiên tiến, đậm đà bản sắc dân tộc","Văn hóa thuần túy tôn giáo"], ans: 2 },
+    { type: 'mc', q: "Cương lĩnh mô tả con người trong xã hội XHCN như thế nào?", options: ["Con người bị ràng buộc bởi tư hữu","Con người được giải phóng khỏi áp bức, bóc lột, bất công","Chỉ giai cấp công nhân mới có quyền lợi","Con người làm theo nhu cầu, hưởng theo mong muốn"], ans: 1 },
+    { type: 'mc', q: "Theo Cương lĩnh, quan hệ giữa các dân tộc trong nước được xác định là:", options: ["Phân biệt đối xử theo khu vực","Bình đẳng, đoàn kết, tôn trọng và giúp đỡ lẫn nhau","Người Kinh lãnh đạo các dân tộc khác","Mỗi dân tộc tự trị độc lập"], ans: 1 },
+    { type: 'mc', q: "Về quan hệ quốc tế, Cương lĩnh khẳng định:", options: ["Đóng cửa, cô lập với thế giới","Hợp tác chỉ với các nước XHCN","Quan hệ hữu nghị và hợp tác với nhân dân tất cả các nước","Liên minh quân sự với một siêu cường"], ans: 2 },
+    { type: 'mc', q: "Mục tiêu cuối cùng của chủ nghĩa xã hội được nêu trong Cương lĩnh 1991 là:", options: ["Công nghiệp hóa trước, con người tính sau","Dân giàu, nước mạnh, xã hội công bằng, văn minh, hạnh phúc của con người","Trở thành nước tư bản phát triển","Tăng trưởng kinh tế bằng mọi giá"], ans: 1 },
+    { type: 'mc', q: "Cương lĩnh xem con người là yếu tố như thế nào trong sự phát triển?", options: ["Công cụ của sản xuất","Mục tiêu, đồng thời là động lực của sự phát triển","Phụ thuộc nhà nước","Chỉ là nguồn lao động"], ans: 1 },
+    { type: 'mc', q: "Theo Cương lĩnh, động lực trực tiếp của phát triển kinh tế – xã hội là:", options: ["Cạnh tranh tư bản","Lợi ích cá nhân gắn với lợi ích tập thể và xã hội","Phân phối bình quân","Đầu tư nước ngoài"], ans: 1 },
+    { type: 'mc', q: "Cương lĩnh khẳng định quá độ lên chủ nghĩa xã hội ở Việt Nam là:", options: ["Quá trình diễn ra rất ngắn (5 năm)","Một bước nhảy tức thì","Quá trình lâu dài, trải qua nhiều giai đoạn","Không cần sự lãnh đạo của Đảng"], ans: 2 },
+    { type: 'mc', q: "Theo Cương lĩnh, phương hướng phát triển nền kinh tế là:", options: ["Nhà nước nắm toàn bộ, không có tư nhân","Kinh tế nhiều thành phần, vận hành theo cơ chế thị trường có sự quản lý của Nhà nước","Tự do hóa hoàn toàn, không cần điều tiết","Chỉ ưu tiên doanh nghiệp nhà nước"], ans: 1 },
+    { type: 'mc', q: "Một trong những định hướng đối ngoại quan trọng trong Cương lĩnh 1991 là:", options: ["Không tham gia tổ chức quốc tế","Hợp tác để phát triển, giữ vững độc lập chủ quyền","Nhập khẩu toàn bộ mô hình XHCN Liên Xô","Ưu tiên quan hệ quân sự hơn kinh tế"], ans: 1 },
+    { type: 'mc', q: "Cương lĩnh 1991 xác định nền tảng tư tưởng của Đảng lần đầu tiên gồm 2 thành phần: hãy chọn đáp án đúng:", options: ["Chủ nghĩa Mác – Lênin + Chủ nghĩa xã hội khoa học","Chủ nghĩa Mác – Lênin + Tư tưởng Hồ Chí Minh","Tư tưởng Hồ Chí Minh + Chủ nghĩa dân tộc","Chủ nghĩa dân tộc + Tư bản nhân văn"], ans: 1 },
+    { type: 'mc', q: "Đại hội đại biểu toàn quốc lần thứ VII của Đảng Cộng sản Việt Nam diễn ra vào thời gian nào?", options: ["1986","6-1991","9-1991","12-1992"], ans: 1 },
+    { type: 'mc', q: "Ai được bầu làm Tổng Bí thư tại Đại hội VII?", options: ["Nguyễn Văn Linh","Lê Khả Phiêu","Đỗ Mười","Nông Đức Mạnh"], ans: 2 },
+    { type: 'mc', q: "Một trong ba mục tiêu phát triển nông thôn đến năm 2000 là:", options: ["Công nghiệp hóa hoàn toàn nông thôn","Xây dựng nông thôn mới có kinh tế phát triển và đời sống văn hóa phong phú","Tập trung đô thị hóa nông thôn","Giảm vai trò của nông nghiệp"], ans: 1 },
+    { type: 'mc', q: "Việt Nam gia nhập ASEAN vào năm:", options: ["1992","1994","1995","1997"], ans: 2 },
+    { type: 'mc', q: "Đại hội VII đề cập đến “bốn nguy cơ” tại Hội nghị giữa nhiệm kỳ (1994). Nguy cơ nào không nằm trong đó?", options: ["Tụt hậu xa về kinh tế","Diễn biến hòa bình","Tham nhũng, quan liêu","Lạm phát tăng cao kéo dài"], ans: 3 },
+    { type: 'mc', q: "Sau Đại hội VII, việc Việt Nam gia nhập ASEAN (1995) phản ánh điều gì trong chủ trương đối ngoại?", options: ["Cô lập, chỉ kết giao với các nước XHCN","Mở rộng quan hệ đối ngoại theo phương châm “đa phương hóa, đa dạng hóa”","Lệ thuộc vào một siêu cường","Không tham gia các tổ chức quốc tế"], ans: 1 },
+    { type: 'mc', q: "Nếu một địa phương tuyên bố tách khỏi sự lãnh đạo của Đảng nhưng vẫn thực hiện kinh tế thị trường, điều này đi ngược lại quan điểm nào trong Đại hội VII?", options: ["Phát triển kinh tế tư nhân","Kinh tế tự cung tự cấp","Đảng lãnh đạo toàn diện, đặc biệt trong lĩnh vực chính trị","Nhà nước pháp quyền XHCN"], ans: 2 },
+    { type: 'mc', q: "Văn kiện nào dưới đây không phải là một Cương lĩnh chính trị của Đảng Cộng sản Việt Nam?", options: ["Cương lĩnh chính trị đầu tiên (2/1930)","Luận cương chính trị (10/1930)","Cương lĩnh xây dựng đất nước trong thời kỳ quá độ lên CNXH (1991)","Cương lĩnh dân chủ mới – đề xuất tại Hội nghị Trung Quốc năm 1950"], ans: 3 },
+];
+
+// 25 CÂU HỎI BẢNG NHÓM 2 (A1 - E5) - ĐÃ CẬP NHẬT
+const team2Questions = [
+    { type: 'mc', q: "Cương lĩnh xây dựng đất nước trong thời kỳ quá độ lên CNXH (1991) là Cương lĩnh thứ mấy trong lịch sử Đảng Cộng sản Việt Nam?", options: ["Thứ hai","Thứ ba","Thứ tư","Thứ năm"], ans: 2 },
+    { type: 'mc', q: "Tại sao kinh tế nhiều thành phần vẫn được coi là “định hướng XHCN”?", options: ["Vì mọi thành phần kinh tế đều bình đẳng trước pháp luật nhưng kinh tế nhà nước giữ vai trò chủ đạo","Vì kinh tế tư nhân nắm toàn bộ quyền lực","Vì không còn vai trò của Đảng và Nhà nước","Vì thị trường tự điều chỉnh không cần quản lý"], ans: 0 },
+    { type: 'mc', q: "Việt Nam và Hoa Kỳ thiết lập lại quan hệ ngoại giao vào năm nào?", options: ["1993","1995","1997","2001"], ans: 1 },
+    { type: 'mc', q: "\"Chiến lược ổn định và phát triển kinh tế - xã hội đến năm 2000\" đã xác định mục tiêu tổng quát đến năm 2000 là:", options: ["Ra khỏi khủng hoảng","Ổn định tình hình kinh tế - xã hội","Phấn đấu vượt qua tình trạng nước nghèo và kém phát triển","Cả 3 phương án trên"], ans: 3 },
+    { type: 'mc', q: "Nguy cơ “tụt hậu xa hơn về kinh tế” được nêu ra do:", options: ["Xuất phát điểm thấp, tăng trưởng chưa cao, môi trường cạnh tranh gay gắt","Thiếu tài nguyên thiên nhiên","Quá phụ thuộc vào nông nghiệp tự cấp tự túc","Không mở cửa kinh tế"], ans: 0 },
+    { type: 'mc', q: "Nếu chỉ đổi mới kinh tế mà bộ máy Đảng không tự chỉnh đốn, điều gì có thể xảy ra theo lo ngại của Hội nghị giữa nhiệm kỳ?", options: ["Kinh tế phát triển nhanh hơn","Đảng mất vai trò lãnh đạo, chệch hướng xã hội chủ nghĩa","Không ảnh hưởng gì vì hai lĩnh vực tách biệt","Nhân dân không quan tâm"], ans: 1 },
+    { type: 'mc', q: "Đại hội đại biểu toàn quốc lần thứ VII của Đảng Cộng Sản Việt Nam được họp tại đâu?", options: ["Thủ đô Hà Nội từ ngày 24 đến ngày 27/06/1991","Đà Nẵng từ ngày 24 đến ngày 27/06/1991","Nghệ An từ ngày 25 đến ngày 27/06/1991","Hồ Chí Minh từ ngày 25 đến ngày 27/06/1991"], ans: 0 },
+    { type: 'mc', q: "Mục tiêu quan trọng hàng đầu của kế hoạch 5 năm 1991–1995 là:", options: ["Tư nhân hóa toàn bộ nền kinh tế","Kiềm chế và đẩy lùi lạm phát","Tăng dân số để có thêm lao động","Loại bỏ kinh tế nhà nước"], ans: 1 },
+    { type: 'mc', q: "Đại hội VII được tiến hành trong hoàn cảnh nào?", options: ["Giành được thắng lợi bước đầu về mọi mặt","Ổn định chính trị - xã hội được giữ vững","Lực lượng thù địch phá hoại cả trong và ngoài nước","Quan hệ đối ngoại bước đầu phát triển"], ans: 2 },
+    { type: 'mc', q: "Đại hội VII của Đảng là:", options: ["“Đại hội của sáng tạo - đổi mới - dân chủ - kỷ cương - đoàn kết”","“Đại hội của trí tuệ - đổi mới - dân chủ - kỷ cương - đoàn kết”","“Đại hội của sáng tạo - phát triển - dân chủ - kỷ cương - đoàn kết”","“Đại hội của trí tuệ - phát triển - dân chủ - kỷ cương - đoàn kết”"], ans: 1 },
+    { type: 'mc', q: "Đại hội VII lần đầu tiên thông qua Chiến lược ổn định và phát triển KT-XH đến năm 2000, trong đó xác định mục tiêu tổng quát đến năm 2000 là:", options: ["Ra khỏi khủng hoảng, ổn định nền kinh tế xã hội, phấn đấu tình trạng nước nghèo và kém phát triển","Trở thành nước đang phát triển có thu nhập trung bình thấp, có nền công nghiệp hiện đại phát triển","Đổi mới cơ chế quản lý, xóa bỏ cơ chế tập trung quan liêu, hành chính, bao cấp, chuyển sang hạch toán, kinh doanh, kết hợp kế hoạch với thị trường","Đổi mới cơ chế quản lý kinh tế, giải quyết những vấn đề cấp bách về phân phối lưu thông"], ans: 0 },
+    { type: 'fitb', q: "Đại hội đại biểu toàn quốc lần thứ VII đã khẳng định: \"Việt Nam muốn là bạn với tất cả các nước trong cộng đồng thế giới, phấn đấu vì ………, ……… và ……”", correctAnswer: "Hòa bình, độc lập, phát triển" },
+    { type: 'mc', q: "Đại hội VII rút ra được bao nhiêu bài học từ đại hội trước đó?", options: ["3","4","5","6"], ans: 2 },
+    { type: 'mc', q: "BCH Trung ương Đại hội VII ra chỉ đạo đổi mới toàn diện, trong đó coi đâu là Mặt trận hàng đầu?", options: ["Công nghiệp","Nông nghiệp","Thương nghiệp","Cả a, b, c"], ans: 1 },
+    { type: 'mc', q: "“Xây dựng xong về cơ bản những cơ sở kinh tế của chủ nghĩa xã hội, với kiến trúc thượng tầng về chính trị và tư tưởng, văn hóa phù hợp, làm cho nước ta trở thành một nước xã hội chủ nghĩa phồn vinh” là:", options: ["Mục tiêu lâu dài của Cương lĩnh xây dựng đất nước trong thời kỳ quá độ lên chủ nghĩa xã hội","Mục tiêu tổng quát của Cương lĩnh năm 1991","Mục tiêu cấp thiết của Chiến lược ổn định và phát triển kinh tế- xã hội đến năm 2000","Mục tiêu quan trọng của Chiến lược ổn định và phát triển kinh tế xã hội đến năm 2000"], ans: 1 },
+    { type: 'fitb', q: "Điền từ còn thiếu vào chỗ trống sau: “lấy liên minh giai cấp …,giai cấp … và … làm nền tảng do Đảng Cộng sản lãnh đạo. Thực hiện đủ quyền làm chủ của nhân dân”", correctAnswer: "công nhân, nông dân, tầng lớp trí thức" },
+    { type: 'mc', q: "Nhận định nào sau đây không đúng khi nói về Đại hội VII?", options: ["Coi nông nghiệp là mặt trận hàng đầu và có cách nhìn toàn diện","Tạo điều kiện cho mọi người có cuộc sống ấm no hạnh phúc","Cần thiết phát triển kinh tế tập thể.","Hình thành nền kinh tế hàng hóa thành phần, vận động theo cơ chế thị trường, có sự quản lý của Nhà nước, theo định hướng xã hội chủ nghĩa"], ans: 2 },
+    { type: 'mc', q: "Kế hoạch 5 năm 1991-1995 không có nội dung nào sau đây:", options: ["Đẩy lùi và kiểm soát lạm phát","Ổn định phát triển và nâng cao hiệu quả nền sản xuất xã hội","Bước đầu tạo ra một cơ cấu kinh tế hợp lí","Bắt đầu có tích lũy từ nội bộ nền kinh tế."], ans: 2 },
+    { type: 'fitb', q: "Điền từ còn thiếu vào chỗ trống: “Nghị quyết Đại hội VII của Đảng đã đưa ra quan điểm coi …… là nhân tố quyết định, là động lực to lớn, là chủ thể sáng tạo mọi nguồn của cải, vật chất là tinh thần của xã hội, là mục tiêu phấn đấu cao nhất của Đảng”", correctAnswer: "Con người" },
+    { type: 'mc', q: "Đại hội VII họp trong bối cảnh nào của hệ thống xã hội chủ nghĩa thế giới?", options: ["Chủ nghĩa xã hội phát triển mạnh","Liên Xô giải tán, hệ thống CNXH sụp đổ.","Kinh tế thế giới tăng trưởng ổn định","Chiến trạnh lạnh"], ans: 1 },
+    { type: 'fitb', q: "Đảng ta lần đầu tiên khẳng định tại Đại hội Đảng toàn quốc lần thứ 7: “Đảng lấy chủ nghĩa Mác - Lênin và….. làm nền tảng tư tưởng, kim chỉ nam, lấy tập trung dân chủ.làm nguyên tắc tổ chức cơ bản.", correctAnswer: "tư tưởng hồ chí minh" },
+    { type: 'mc', q: "Số lượng Đại biểu tham dự đại hội VII(6/1991) là?", options: ["1176 đại biểu","1377 đại biểu","1347 đại biểu","1276 đại biểu"], ans: 0 },
+    { type: 'mc', q: "Theo quan điểm của Đảng sau Đại hội VII, nhiệm vụ củng cố quốc phòng và giữ vững an ninh quốc gia thuộc về:", options: ["Quân đội nhân dân","Công an nhân dân","Toàn Đảng, toàn dân và toàn quân","Riêng Nhà nước và Chính phủ"], ans: 2 },
+    { type: 'mc', q: "“Diễn biến hòa bình” theo tài liệu được hiểu là:", options: ["Xâm lược quân sự trực tiếp","Âm mưu thâm nhập, phá hoại từ bên trong bằng biện pháp phi vũ trang","Tuyên truyền hòa bình giữa các dân tộc","Chống khủng bố quốc tế"], ans: 1 },
+    { type: 'mc', q: "Thời điểm Việt Nam bình thường hóa quan hệ với Trung Quốc là:", options: ["1990","1991","1995","1989"], ans: 1 },
+];
+
+
+const BOARD_SIZE = 5;
+
+// Gán 25 câu hỏi mới cho Bảng 1 (index 0-24) và 25 câu hỏi mới cho Bảng 2 (index 25-49)
+let masterQuestions = [...team1Questions];
+masterQuestions = masterQuestions.concat(team2Questions);
+
+
+function createBoard(boardId) {
+    const board = document.getElementById(boardId);
+    const labels = ['A','B','C','D','E'];
+
+    board.appendChild(document.createElement('div')); // góc
+    for (let j = 1; j <= BOARD_SIZE; j++) {
+        const label = document.createElement('div');
+        label.className = 'label';
+        label.textContent = j;
+        board.appendChild(label);
+    }
+
+    for (let i = 0; i < BOARD_SIZE; i++) {
+        const rowLabel = document.createElement('div');
+        rowLabel.className = 'label';
+        rowLabel.textContent = labels[i];
+        board.appendChild(rowLabel);
+
+        for (let j = 0; j < BOARD_SIZE; j++) {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            const index = `${labels[i]}${j+1}`;
+            cell.dataset.index = index;
+            cell.dataset.boardId = boardId;
+            cell.dataset.hasQuestion = 'false';
+            cell.dataset.answered = 'false';
+            
+            const cellIndex = (i * BOARD_SIZE) + j;
+            let questionIndex;
+
+            if (boardId === 'board1') {
+                questionIndex = cellIndex; // Index 0-24 (Bảng 1)
+            } else {
+                questionIndex = cellIndex + (BOARD_SIZE * BOARD_SIZE); // Index 25-49 (Bảng 2)
+            }
+
+            if (masterQuestions[questionIndex]) {
+                cell.questionData = masterQuestions[questionIndex];
+                cell.dataset.hasQuestion = 'true';
+            }
+
+            board.appendChild(cell);
+        }
+    }
+}
+createBoard('board1');
+createBoard('board2');
+
+const popup = document.getElementById('popup');
+const redBtn = document.querySelector('.color-btn.red');
+const blueBtn = document.querySelector('.color-btn.blue');
+let currentCell = null;
+
+const quizPopup = document.getElementById('quizPopup');
+const quizBox = document.getElementById('quizBox');
+const quizQuestion = document.getElementById('quizQuestion');
+const quizContent = document.getElementById('quizContent');
+const backBtn = document.getElementById('backBtn');
+
+const rulePopup = document.getElementById('rulePopup');
+const ruleBtn = document.getElementById('ruleBtn');
+const closeRuleBtn = document.getElementById('closeRuleBtn');
+
+ruleBtn.addEventListener('click', () => {
+    rulePopup.style.display = 'flex';
+});
+
+closeRuleBtn.addEventListener('click', () => {
+    rulePopup.style.display = 'none';
+});
+
+rulePopup.addEventListener('click', (e) => {
+    if (e.target === rulePopup) {
+        rulePopup.style.display = 'none';
+    }
+});
+
+document.querySelectorAll('.cell').forEach(cell => {
+    cell.addEventListener('click', (e) => {
+        currentCell = e.currentTarget;
+        const rect = currentCell.getBoundingClientRect();
+        const left = rect.right + 8;
+        let top = rect.top;
+        if (left + 150 > window.innerWidth) {
+            popup.style.left = (rect.left - 8 - 60) + 'px';
+        } else {
+            popup.style.left = left + 'px';
+        }
+        if (top + 50 > window.innerHeight) top = window.innerHeight - 60;
+        popup.style.top = top + 'px';
+        popup.style.display = 'flex';
+    });
+
+    cell.addEventListener('dblclick', (e) => {
+        currentCell = e.currentTarget;
+        popup.style.display = 'none';
+        quizBox.classList.remove('celebrate');
+        
+        if (currentCell.dataset.answered === 'true') {
+            return;
+        }
+        
+        currentCell.classList.remove('hit', 'miss');
+        currentCell.textContent = '';
+        openQuizForCell(currentCell);
+    });
+});
+
+redBtn.addEventListener('click', () => {
+    if (currentCell) {
+        currentCell.textContent = '';
+        currentCell.classList.remove('miss');
+        currentCell.classList.add('hit');
+        currentCell.dataset.answered = 'false';
+    }
+    popup.style.display = 'none';
+});
+
+blueBtn.addEventListener('click', () => {
+    if (currentCell) {
+        currentCell.textContent = '';
+        currentCell.classList.remove('hit');
+        currentCell.classList.add('miss');
+        currentCell.dataset.answered = 'false';
+    }
+    popup.style.display = 'none';
+});
+
+window.addEventListener('click', (e) => {
+    if (!popup.contains(e.target) && !e.target.classList.contains('cell') && !e.target.closest('.color-btn')) {
+        popup.style.display = 'none';
+    }
+});
+
+function openQuizForCell(cell) {
+    let data;
+
+    if (cell.dataset.hasQuestion === 'true' && cell.questionData) {
+        data = cell.questionData;
+    } else {
+        alert(`Ô ${cell.dataset.index} chưa được gán câu hỏi cố định.`);
+        return;
+    }
+
+    quizQuestion.textContent = data.q;
+    quizContent.innerHTML = '';
+    
+    if (data.type === 'mc') {
+        renderMultipleChoice(data);
+    } else if (data.type === 'fitb') {
+        renderFillInTheBlank(data);
+    }
+
+    quizPopup.style.display = 'flex';
+}
+
+function celebrate() {
+    quizBox.classList.add('celebrate');
+    setTimeout(() => quizBox.classList.remove('celebrate'), 500);
+}
+
+function updateCellOnAnswer(isCorrect) {
+    if (currentCell) {
+        currentCell.dataset.answered = 'true';
+        currentCell.classList.remove('hit', 'miss');
+        currentCell.textContent = '';
+    }
+}
+
+function renderMultipleChoice(data) {
+    data.options.forEach((opt, idx) => {
+        const o = document.createElement('div');
+        o.className = 'option';
+        o.textContent = opt;
+        o.dataset.idx = idx;
+        
+        o.addEventListener('click', (e) => {
+            const allOptions = Array.from(quizContent.children);
+            allOptions.forEach(ch => ch.style.pointerEvents = 'none');
+            
+            const selectedIndex = Number(e.currentTarget.dataset.idx);
+            let isCorrect = selectedIndex === data.ans;
+            
+            allOptions.forEach(ch => {
+                if (Number(ch.dataset.idx) === data.ans) {
+                    ch.classList.add('correct');
+                }
+            });
+            
+            if (!isCorrect) {
+                e.currentTarget.classList.add('wrong');
+            } else {
+                celebrate();
+            }
+
+            updateCellOnAnswer(isCorrect);
+        });
+        quizContent.appendChild(o);
+    });
+}
+
+function renderFillInTheBlank(data) {
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'fitb-input';
+    input.placeholder = 'Nhập câu trả lời của bạn...';
+    
+    const button = document.createElement('button');
+    button.className = 'fitb-btn';
+    button.textContent = 'Kiểm tra';
+
+    const feedback = document.createElement('div');
+    feedback.className = 'fitb-feedback';
+    
+    quizContent.appendChild(input);
+    quizContent.appendChild(button);
+    quizContent.appendChild(feedback);
+
+    let answered = false;
+    
+    button.addEventListener('click', () => {
+        if (answered) return;
+
+        const normalize = (text) => text.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s{2,}/g," ").trim();
+
+        const userAnswer = normalize(input.value);
+        const correctAnswer = normalize(data.correctAnswer);
+        
+        let isCorrect = (userAnswer === correctAnswer);
+
+        input.disabled = true;
+        button.style.pointerEvents = 'none';
+        answered = true;
+
+        if (isCorrect) {
+            feedback.innerHTML = 'CHÍNH XÁC! 🎉✨';
+            feedback.style.color = '#8cd179';
+            celebrate();
+            updateCellOnAnswer(true);
+        } else {
+            feedback.innerHTML = `SAI. Đáp án đúng là: <strong>${data.correctAnswer}</strong>`;
+            feedback.style.color = '#ff7b7b';
+            updateCellOnAnswer(false);
+        }
+    });
+
+    input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !answered) {
+            button.click();
+        }
+    });
+}
+
+backBtn.addEventListener('click', () => {
+    quizPopup.style.display = 'none';
+});
+
+/* --- New Ship Placement Logic --- */
+let currentTeam = 1; // 1 for Team 1, 2 for Team 2
+let shipOrientation = 'horizontal'; // default
+let team1Ships = []; // store ship positions for Team 1
+let team2Ships = []; // store ship positions for Team 2
+let placingShips = false;
+
+const placeShipsBtn = document.getElementById('placeShipsBtn');
+const showShipsBtn = document.getElementById('showShipsBtn');
+const showShipsPopup = document.getElementById('show-ships-popup');
+const showTeam1Btn = document.getElementById('show-team1');
+const showTeam2Btn = document.getElementById('show-team2');
+const showBothBtn = document.getElementById('show-both');
+const hideAllBtn = document.getElementById('hide-all-ships');
+
+// Toggle orientation on 'R' key
+document.addEventListener('keydown', (e) => {
+    if (e.key.toLowerCase() === 'r' && placingShips) {
+        shipOrientation = shipOrientation === 'horizontal' ? 'vertical' : 'horizontal';
+        document.querySelectorAll('.ship').forEach(ship => {
+            ship.classList.remove('horizontal', 'vertical');
+            ship.classList.add(shipOrientation);
+            if (shipOrientation === 'vertical') {
+                ship.style.width = '70px';
+                ship.style.height = (parseInt(ship.dataset.length) * 70) + 'px';
+            } else {
+                ship.style.width = (parseInt(ship.dataset.length) * 70) + 'px';
+                ship.style.height = '70px';
+            }
+        });
+    }
+});
+
+// Start placing ships
+placeShipsBtn.addEventListener('click', () => {
+    if (placingShips) return;
+    placingShips = true;
+    currentTeam = 1;
+    alert('Team 1: Đặt thuyền của bạn. Nhấn R để xoay thuyền.');
+    createShipContainer('board1');
+});
+
+// Create ship container for dragging
+function createShipContainer(boardId) {
+    let shipContainer = document.querySelector('.ship-container');
+    if (shipContainer) shipContainer.remove();
+
+    shipContainer = document.createElement('div');
+    shipContainer.className = 'ship-container';
+    document.body.appendChild(shipContainer);
+
+    const lengths = [3, 2, 1];
+    lengths.forEach(length => {
+        const ship = document.createElement('div');
+        ship.className = `ship ${shipOrientation}`;
+        ship.draggable = true;
+        ship.dataset.length = length;
+        ship.style.display = 'flex';
+        for (let i = 0; i < length; i++) {
+            const unit = document.createElement('div');
+            unit.className = 'ship-unit';
+            ship.appendChild(unit);
+        }
+        if (shipOrientation === 'horizontal') {
+            ship.style.flexDirection = 'row';
+            ship.style.width = (length * 70) + 'px';
+            ship.style.height = '70px';
+        } else {
+            ship.style.flexDirection = 'column';
+            ship.style.width = '70px';
+            ship.style.height = (length * 70) + 'px';
+        }
+        shipContainer.appendChild(ship);
+
+        ship.addEventListener('dragstart', dragStart);
+    });
+
+    // Add save button
+    const saveBtn = document.createElement('button');
+    saveBtn.textContent = 'Lưu';
+    saveBtn.className = 'action-btn';
+    saveBtn.style.position = 'static';
+    saveBtn.addEventListener('click', saveShips);
+    shipContainer.appendChild(saveBtn);
+
+    // Make board droppable
+    const board = document.getElementById(boardId);
+    board.addEventListener('dragover', dragOver);
+    board.addEventListener('drop', dropShip);
+}
+
+function dragStart(e) {
+    e.dataTransfer.setData('text/plain', e.target.dataset.length);
+    e.dataTransfer.setData('orientation', shipOrientation);
+}
+
+function dragOver(e) {
+    e.preventDefault();
+}
+
+function dropShip(e) {
+    e.preventDefault();
+    const length = parseInt(e.dataTransfer.getData('text/plain'));
+    const orientation = e.dataTransfer.getData('orientation');
+    const targetCell = e.target.closest('.cell');
+    if (!targetCell || targetCell.classList.contains('ship')) return;
+
+    const board = targetCell.closest('.board');
+    const cells = Array.from(board.querySelectorAll('.cell'));
+    const targetIndex = cells.indexOf(targetCell);
+
+    const row = Math.floor(targetIndex / BOARD_SIZE);
+    const col = targetIndex % BOARD_SIZE;
+
+    let positions = [];
+    for (let i = 0; i < length; i++) {
+        let cellIndex;
+        if (orientation === 'horizontal') {
+            if (col + i >= BOARD_SIZE) return; // Out of bounds
+            cellIndex = row * BOARD_SIZE + (col + i);
+        } else {
+            if (row + i >= BOARD_SIZE) return; // Out of bounds
+            cellIndex = (row + i) * BOARD_SIZE + col;
+        }
+        if (cells[cellIndex].classList.contains('ship')) return; // Overlap
+        positions.push(cells[cellIndex].dataset.index);
+        cells[cellIndex].classList.add('ship');
+    }
+
+    // Remove the dragged ship from container
+    const draggedShip = document.querySelector(`.ship[data-length="${length}"]`);
+    if (draggedShip) draggedShip.remove();
+}
+
+function saveShips() {
+    const boardId = currentTeam === 1 ? 'board1' : 'board2';
+    const board = document.getElementById(boardId);
+    const cells = Array.from(board.querySelectorAll('.cell'));
+    const shipPositions = cells.reduce((acc, cell, idx) => {
+        if (cell.classList.contains('ship')) {
+            acc.push(cell.dataset.index);
+            cell.classList.remove('ship'); // Hide ships
+        }
+        return acc;
+    }, []);
+
+    if (currentTeam === 1) {
+        team1Ships = shipPositions;
+        alert('Team 1 đã lưu thuyền. Bây giờ đến Team 2.');
+        currentTeam = 2;
+        createShipContainer('board2');
+    } else {
+        team2Ships = shipPositions;
+        alert('Team 2 đã lưu thuyền. Đặt thuyền hoàn tất.');
+        placingShips = false;
+        const shipContainer = document.querySelector('.ship-container');
+        if (shipContainer) shipContainer.remove();
+    }
+}
+
+// Show ships button
+showShipsBtn.addEventListener('click', () => {
+    showShipsPopup.style.display = 'flex';
+});
+
+showTeam1Btn.addEventListener('click', () => showShips('team1'));
+showTeam2Btn.addEventListener('click', () => showShips('team2'));
+showBothBtn.addEventListener('click', () => showShips('both'));
+hideAllBtn.addEventListener('click', () => showShips('none'));
+
+showShipsPopup.addEventListener('click', (e) => {
+    if (e.target === showShipsPopup) {
+        showShipsPopup.style.display = 'none';
+    }
+});
+
+function showShips(mode) {
+    const board1Cells = Array.from(document.getElementById('board1').querySelectorAll('.cell'));
+    const board2Cells = Array.from(document.getElementById('board2').querySelectorAll('.cell'));
+
+    // Hide all first
+    board1Cells.forEach(cell => cell.classList.remove('ship'));
+    board2Cells.forEach(cell => cell.classList.remove('ship'));
+
+    if (mode === 'team1' || mode === 'both') {
+        team1Ships.forEach(index => {
+            const cell = board1Cells.find(c => c.dataset.index === index);
+            if (cell) cell.classList.add('ship');
+        });
+    }
+
+    if (mode === 'team2' || mode === 'both') {
+        team2Ships.forEach(index => {
+            const cell = board2Cells.find(c => c.dataset.index === index);
+            if (cell) cell.classList.add('ship');
+        });
+    }
+
+    showShipsPopup.style.display = 'none';
+}
+
+</script>
+</body>
+</html>
