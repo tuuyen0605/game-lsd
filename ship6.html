@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Bắn Thuyền</title>
+<title>Bắn Thuyền - Nhóm 1 & Nhóm 2 (Quiz flow - Ocean Theme)</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap');
 
@@ -19,7 +19,7 @@ body {
     overflow: hidden;
     background: url('Light Blue Pirate Birthday Poster.png') no-repeat center center fixed;
     background-size: cover; 
-    padding-top: 120px; /* ĐÃ TĂNG TỪ 100px LÊN 120px ĐỂ DỊCH BẢNG LÊN */
+    padding-top: 100px; /* Added padding to avoid overlapping with controls */
 }
 
 .container {
@@ -80,10 +80,10 @@ h2 {
     border-radius: 12px;
     cursor: pointer;
     transition: all 0.16s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 26px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:26px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     font-weight: 800;
     position: relative;
@@ -158,7 +158,7 @@ h2 {
     border-radius: 25px;
     padding: 40px;
     box-shadow: 0 15px 40px rgba(0,0,0,0.5);
-    text-align: center;
+    text-align:center;
     transition: transform 0.1s ease-in-out;
 }
 @keyframes shake-and-celebrate {
@@ -264,6 +264,7 @@ h2 {
     cursor: pointer;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     transition: all 0.2s ease;
+    z-index: 60; 
 }
 .action-btn:hover {
     background: #5a6268;
@@ -273,17 +274,6 @@ h2 {
 .action-btn:active {
     transform: translateY(0);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-}
-
-/* Container bọc các nút ở góc phải trên cùng */
-#controls-container {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    display: flex;
-    flex-direction: column; /* Xếp dọc */
-    gap: 10px; /* Khoảng cách giữa các nút */
-    z-index: 60;
 }
 
 .rule-popup {
@@ -397,6 +387,16 @@ h2 {
     background: #808080 !important;
 }
 
+#ship-placement-controls {
+    position: absolute;
+    top: 10px; /* Adjusted to top to avoid overlapping */
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+    z-index: 60;
+}
+
 #show-ships-popup {
     position: fixed;
     inset: 0;
@@ -409,35 +409,29 @@ h2 {
 
 .show-ships-box {
     background: #fff;
-    padding: 30px; /* Tăng padding */
-    border-radius: 20px; /* Bo tròn hơn */
+    padding: 20px;
+    border-radius: 10px;
     text-align: center;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
-/* THAY ĐỔI MÀU NÚT BẮN THUYỀN VÀ FONT */
 .show-ships-box button {
     margin: 10px;
-    padding: 15px 25px; /* Tăng kích thước nút */
-    background: #b30000; /* Màu đỏ sẫm */
+    padding: 10px 20px;
+    background: #0056cc;
     color: white;
     border: none;
-    border-radius: 15px; /* Bo tròn hơn */
+    border-radius: 5px;
     cursor: pointer;
-    font-size: 18px; /* Tăng cỡ chữ */
-    font-weight: 700;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-    transition: background 0.1s;
 }
 
 .show-ships-box button:hover {
-    background: #8e0000; /* Đỏ đậm hơn khi hover */
+    background: #0044a0;
 }
 </style>
 </head>
 <body>
-    <div id="controls-container">
-        <button id="ruleBtn" class="action-btn">Luật Chơi</button>
+    <button id="ruleBtn" class="action-btn" style="position: absolute; top: 10px; right: 10px;">Luật Chơi</button>
+    <div id="ship-placement-controls">
         <button id="placeShipsBtn" class="action-btn">Đặt Thuyền</button>
         <button id="showShipsBtn" class="action-btn">Hiện Thuyền</button>
     </div>
@@ -504,72 +498,71 @@ h2 {
 
 <script>
 /* --- DATA CÂU HỎI TỔNG HỢP --- */
-
-// 25 CÂU HỎI BẢNG NHÓM 1 (A1 - E5) - Đã cập nhật ở yêu cầu trước
-const team1Questions = [
-    { type: 'mc', q: "Cương lĩnh 1991 được thông qua tại Đại hội Đảng toàn quốc lần thứ mấy?", options: ["Đại hội VI","Đại hội VII","Đại hội VIII","Đại hội V"], ans: 1 },
-    { type: 'mc', q: "Phát biểu nào sai khi nói về bối cảnh Việt Nam trước Đại hội VII?", options: ["Đổi mới đã bắt đầu từ 1986 nhưng còn nhiều khó khăn.","Mỹ đã bình thường hóa quan hệ với Việt Nam.","Lạm phát từng lên tới 3 con số.","Kinh tế thiếu lương thực, nợ nước ngoài cao."], ans: 1 },
-    { type: 'mc', q: "Phát biểu nào sai về bối cảnh ra đời của Cương lĩnh 1991?", options: ["Chủ nghĩa xã hội thế giới khủng hoảng nghiêm trọng.","Liên Xô và Đông Âu tan rã.","Việt Nam đang trong thời kỳ chống Pháp.","Công cuộc Đổi mới đã tiến hành hơn 5 năm nhưng còn nhiều khó khăn."], ans: 2 },
-    { type: 'mc', q: "Tên đầy đủ của văn kiện Cương lĩnh năm 1991 là:", options: ["Cương lĩnh dân tộc dân chủ nhân dân","Cương lĩnh xây dựng chủ nghĩa xã hội ở miền Bắc","Cương lĩnh xây dựng đất nước trong thời kỳ quá độ lên chủ nghĩa xã hội","Cương lĩnh về công nghiệp hóa – hiện đại hóa đất nước"], ans: 2 },
-    { type: 'mc', q: "Đặc trưng chính trị của xã hội XHCN theo Cương lĩnh 1991 là:", options: ["Xã hội do một cá nhân lãnh đạo tuyệt đối","Xã hội đa đảng cạnh tranh","Xã hội mà nhân dân lao động làm chủ","Xã hội quân chủ lập hiến"], ans: 2 },
-    { type: 'mc', q: "Đặc trưng kinh tế trong Cương lĩnh 1991 là:", options: ["Kinh tế tự cung tự cấp","Kinh tế thị trường tự do hoàn toàn","Nền kinh tế phát triển cao dựa trên lực lượng sản xuất hiện đại và chế độ công hữu tư liệu sản xuất chủ yếu","Xóa bỏ mọi hình thức sở hữu tư nhân"], ans: 2 },
-    { type: 'mc', q: "Nội dung nào dưới đây phản ánh đúng quan điểm về văn hóa trong Cương lĩnh 1991?", options: ["Văn hóa nhập khẩu phương Tây","Văn hóa phong kiến cải biên","Văn hóa tiên tiến, đậm đà bản sắc dân tộc","Văn hóa thuần túy tôn giáo"], ans: 2 },
-    { type: 'mc', q: "Cương lĩnh mô tả con người trong xã hội XHCN như thế nào?", options: ["Con người bị ràng buộc bởi tư hữu","Con người được giải phóng khỏi áp bức, bóc lột, bất công","Chỉ giai cấp công nhân mới có quyền lợi","Con người làm theo nhu cầu, hưởng theo mong muốn"], ans: 1 },
-    { type: 'mc', q: "Theo Cương lĩnh, quan hệ giữa các dân tộc trong nước được xác định là:", options: ["Phân biệt đối xử theo khu vực","Bình đẳng, đoàn kết, tôn trọng và giúp đỡ lẫn nhau","Người Kinh lãnh đạo các dân tộc khác","Mỗi dân tộc tự trị độc lập"], ans: 1 },
-    { type: 'mc', q: "Về quan hệ quốc tế, Cương lĩnh khẳng định:", options: ["Đóng cửa, cô lập với thế giới","Hợp tác chỉ với các nước XHCN","Quan hệ hữu nghị và hợp tác với nhân dân tất cả các nước","Liên minh quân sự với một siêu cường"], ans: 2 },
-    { type: 'mc', q: "Mục tiêu cuối cùng của chủ nghĩa xã hội được nêu trong Cương lĩnh 1991 là:", options: ["Công nghiệp hóa trước, con người tính sau","Dân giàu, nước mạnh, xã hội công bằng, văn minh, hạnh phúc của con người","Trở thành nước tư bản phát triển","Tăng trưởng kinh tế bằng mọi giá"], ans: 1 },
-    { type: 'mc', q: "Cương lĩnh xem con người là yếu tố như thế nào trong sự phát triển?", options: ["Công cụ của sản xuất","Mục tiêu, đồng thời là động lực của sự phát triển","Phụ thuộc nhà nước","Chỉ là nguồn lao động"], ans: 1 },
-    { type: 'mc', q: "Theo Cương lĩnh, động lực trực tiếp của phát triển kinh tế – xã hội là:", options: ["Cạnh tranh tư bản","Lợi ích cá nhân gắn với lợi ích tập thể và xã hội","Phân phối bình quân","Đầu tư nước ngoài"], ans: 1 },
-    { type: 'mc', q: "Cương lĩnh khẳng định quá độ lên chủ nghĩa xã hội ở Việt Nam là:", options: ["Quá trình diễn ra rất ngắn (5 năm)","Một bước nhảy tức thì","Quá trình lâu dài, trải qua nhiều giai đoạn","Không cần sự lãnh đạo của Đảng"], ans: 2 },
-    { type: 'mc', q: "Theo Cương lĩnh, phương hướng phát triển nền kinh tế là:", options: ["Nhà nước nắm toàn bộ, không có tư nhân","Kinh tế nhiều thành phần, vận hành theo cơ chế thị trường có sự quản lý của Nhà nước","Tự do hóa hoàn toàn, không cần điều tiết","Chỉ ưu tiên doanh nghiệp nhà nước"], ans: 1 },
-    { type: 'mc', q: "Một trong những định hướng đối ngoại quan trọng trong Cương lĩnh 1991 là:", options: ["Không tham gia tổ chức quốc tế","Hợp tác để phát triển, giữ vững độc lập chủ quyền","Nhập khẩu toàn bộ mô hình XHCN Liên Xô","Ưu tiên quan hệ quân sự hơn kinh tế"], ans: 1 },
-    { type: 'mc', q: "Cương lĩnh 1991 xác định nền tảng tư tưởng của Đảng lần đầu tiên gồm 2 thành phần: hãy chọn đáp án đúng:", options: ["Chủ nghĩa Mác – Lênin + Chủ nghĩa xã hội khoa học","Chủ nghĩa Mác – Lênin + Tư tưởng Hồ Chí Minh","Tư tưởng Hồ Chí Minh + Chủ nghĩa dân tộc","Chủ nghĩa dân tộc + Tư bản nhân văn"], ans: 1 },
-    { type: 'mc', q: "Đại hội đại biểu toàn quốc lần thứ VII của Đảng Cộng sản Việt Nam diễn ra vào thời gian nào?", options: ["1986","6-1991","9-1991","12-1992"], ans: 1 },
-    { type: 'mc', q: "Ai được bầu làm Tổng Bí thư tại Đại hội VII?", options: ["Nguyễn Văn Linh","Lê Khả Phiêu","Đỗ Mười","Nông Đức Mạnh"], ans: 2 },
-    { type: 'mc', q: "Một trong ba mục tiêu phát triển nông thôn đến năm 2000 là:", options: ["Công nghiệp hóa hoàn toàn nông thôn","Xây dựng nông thôn mới có kinh tế phát triển và đời sống văn hóa phong phú","Tập trung đô thị hóa nông thôn","Giảm vai trò của nông nghiệp"], ans: 1 },
-    { type: 'mc', q: "Việt Nam gia nhập ASEAN vào năm:", options: ["1992","1994","1995","1997"], ans: 2 },
-    { type: 'mc', q: "Đại hội VII đề cập đến “bốn nguy cơ” tại Hội nghị giữa nhiệm kỳ (1994). Nguy cơ nào không nằm trong đó?", options: ["Tụt hậu xa về kinh tế","Diễn biến hòa bình","Tham nhũng, quan liêu","Lạm phát tăng cao kéo dài"], ans: 3 },
-    { type: 'mc', q: "Sau Đại hội VII, việc Việt Nam gia nhập ASEAN (1995) phản ánh điều gì trong chủ trương đối ngoại?", options: ["Cô lập, chỉ kết giao với các nước XHCN","Mở rộng quan hệ đối ngoại theo phương châm “đa phương hóa, đa dạng hóa”","Lệ thuộc vào một siêu cường","Không tham gia các tổ chức quốc tế"], ans: 1 },
-    { type: 'mc', q: "Nếu một địa phương tuyên bố tách khỏi sự lãnh đạo của Đảng nhưng vẫn thực hiện kinh tế thị trường, điều này đi ngược lại quan điểm nào trong Đại hội VII?", options: ["Phát triển kinh tế tư nhân","Kinh tế tự cung tự cấp","Đảng lãnh đạo toàn diện, đặc biệt trong lĩnh vực chính trị","Nhà nước pháp quyền XHCN"], ans: 2 },
-    { type: 'mc', q: "Văn kiện nào dưới đây không phải là một Cương lĩnh chính trị của Đảng Cộng sản Việt Nam?", options: ["Cương lĩnh chính trị đầu tiên (2/1930)","Luận cương chính trị (10/1930)","Cương lĩnh xây dựng đất nước trong thời kỳ quá độ lên CNXH (1991)","Cương lĩnh dân chủ mới – đề xuất tại Hội nghị Trung Quốc năm 1950"], ans: 4 },
-];
-
-// 25 CÂU HỎI BẢNG NHÓM 2 (A1 - E5) - ĐÃ CẬP NHẬT
-const team2Questions = [
-    { type: 'mc', q: "Cương lĩnh xây dựng đất nước trong thời kỳ quá độ lên CNXH (1991) là Cương lĩnh thứ mấy trong lịch sử Đảng Cộng sản Việt Nam?", options: ["Thứ hai","Thứ ba","Thứ tư","Thứ năm"], ans: 2 },
-    { type: 'mc', q: "Tại sao kinh tế nhiều thành phần vẫn được coi là “định hướng XHCN”?", options: ["Vì mọi thành phần kinh tế đều bình đẳng trước pháp luật nhưng kinh tế nhà nước giữ vai trò chủ đạo","Vì kinh tế tư nhân nắm toàn bộ quyền lực","Vì không còn vai trò của Đảng và Nhà nước","Vì thị trường tự điều chỉnh không cần quản lý"], ans: 0 },
-    { type: 'mc', q: "Việt Nam và Hoa Kỳ thiết lập lại quan hệ ngoại giao vào năm nào?", options: ["1993","1995","1997","2001"], ans: 1 },
-    { type: 'mc', q: "\"Chiến lược ổn định và phát triển kinh tế - xã hội đến năm 2000\" đã xác định mục tiêu tổng quát đến năm 2000 là:", options: ["Ra khỏi khủng hoảng","Ổn định tình hình kinh tế - xã hội","Phấn đấu vượt qua tình trạng nước nghèo và kém phát triển","Cả 3 phương án trên"], ans: 3 },
-    { type: 'mc', q: "Nguy cơ “tụt hậu xa hơn về kinh tế” được nêu ra do:", options: ["Xuất phát điểm thấp, tăng trưởng chưa cao, môi trường cạnh tranh gay gắt","Thiếu tài nguyên thiên nhiên","Quá phụ thuộc vào nông nghiệp tự cấp tự túc","Không mở cửa kinh tế"], ans: 0 },
-    { type: 'mc', q: "Nếu chỉ đổi mới kinh tế mà bộ máy Đảng không tự chỉnh đốn, điều gì có thể xảy ra theo lo ngại của Hội nghị giữa nhiệm kỳ?", options: ["Kinh tế phát triển nhanh hơn","Đảng mất vai trò lãnh đạo, chệch hướng xã hội chủ nghĩa","Không ảnh hưởng gì vì hai lĩnh vực tách biệt","Nhân dân không quan tâm"], ans: 1 },
-    { type: 'mc', q: "Đại hội đại biểu toàn quốc lần thứ VII của Đảng Cộng Sản Việt Nam được họp tại đâu?", options: ["Thủ đô Hà Nội từ ngày 24 đến ngày 27/06/1991","Đà Nẵng từ ngày 24 đến ngày 27/06/1991","Nghệ An từ ngày 25 đến ngày 27/06/1991","Hồ Chí Minh từ ngày 25 đến ngày 27/06/1991"], ans: 0 },
-    { type: 'mc', q: "Mục tiêu quan trọng hàng đầu của kế hoạch 5 năm 1991–1995 là:", options: ["Tư nhân hóa toàn bộ nền kinh tế","Kiềm chế và đẩy lùi lạm phát","Tăng dân số để có thêm lao động","Loại bỏ kinh tế nhà nước"], ans: 1 },
-    { type: 'mc', q: "Đại hội VII được tiến hành trong hoàn cảnh nào?", options: ["Giành được thắng lợi bước đầu về mọi mặt","Ổn định chính trị - xã hội được giữ vững","Lực lượng thù địch phá hoại cả trong và ngoài nước","Quan hệ đối ngoại bước đầu phát triển"], ans: 2 },
-    { type: 'mc', q: "Đại hội VII của Đảng là:", options: ["“Đại hội của sáng tạo - đổi mới - dân chủ - kỷ cương - đoàn kết”","“Đại hội của trí tuệ - đổi mới - dân chủ - kỷ cương - đoàn kết”","“Đại hội của sáng tạo - phát triển - dân chủ - kỷ cương - đoàn kết”","“Đại hội của trí tuệ - phát triển - dân chủ - kỷ cương - đoàn kết”"], ans: 1 },
-    { type: 'mc', q: "Đại hội VII lần đầu tiên thông qua Chiến lược ổn định và phát triển KT-XH đến năm 2000, trong đó xác định mục tiêu tổng quát đến năm 2000 là:", options: ["Ra khỏi khủng hoảng, ổn định nền kinh tế xã hội, phấn đấu tình trạng nước nghèo và kém phát triển","Trở thành nước đang phát triển có thu nhập trung bình thấp, có nền công nghiệp hiện đại phát triển","Đổi mới cơ chế quản lý, xóa bỏ cơ chế tập trung quan liêu, hành chính, bao cấp, chuyển sang hạch toán, kinh doanh, kết hợp kế hoạch với thị trường","Đổi mới cơ chế quản lý kinh tế, giải quyết những vấn đề cấp bách về phân phối lưu thông"], ans: 0 },
-    { type: 'fitb', q: "Đại hội đại biểu toàn quốc lần thứ VII đã khẳng định: \"Việt Nam muốn là bạn với tất cả các nước trong cộng đồng thế giới, phấn đấu vì ………, ……… và ……”", correctAnswer: "Hòa bình, độc lập, phát triển" },
+const officialQuestions = [
     { type: 'mc', q: "Đại hội VII rút ra được bao nhiêu bài học từ đại hội trước đó?", options: ["3","4","5","6"], ans: 2 },
+    { type: 'mc', q: "Nhiệm vụ nào sau đây được nêu ra trong Đại hội VII?", options: ["Bước đầu ổn định và từng bước cải thiện đời sống vật chất và văn hoá của nhân dân lao động.","Cần kiệm để công nghiệp hoá, khắc phục xu hướng chạy theo “xã hội tiêu dùng\".","Nâng cao năng lực lãnh đạo, năng lực cầm quyền và sức chiến đấu của Đảng, xây dựng Đảng và hệ thống chính trị trong sạch, vững mạnh.", "Phát huy quyền tự chủ trong sản xuất kinh doanh của các xí nghiệp quốc doanh."], ans: 0 },
+    { type: 'mc', q: "Lần đầu tiên Đảng giương cao ngọn cờ tư tưởng Hồ Chí Minh vào đại hội nào?", options: ["Đại hội VI (1986)","Đại hội VII (1991)","Đại hội VIII (1996)","Đại hội IX (2001)"], ans: 1 },
+    { type: 'mc', q: "Trong Hội nghị 4 đã ban hành 5 nghị quyết dựa trên quan điểm coi gì là mục tiêu phấn đấu cao nhất của Đảng?", options: ["Độc lập của dân tộc","Quyền tự do của con người","Đất nước ổn định và phát triển","Hạnh phúc của con người"], ans: 3 },
+    { type: 'mc', q: "Đại hội Đại biểu Toàn quốc năm 1991 nhấn mạnh mục tiêu tổng quát là gì?", options: ["Vượt khó khăn thử thách, ổn định và phát triển kinh tế - xã hội, tăng cường ổn định chính trị, đẩy lùi tiêu cực và bất công xã hội, đưa nước ta cơ bản ra khỏi tình trạng khủng hoảng.","Vượt khó khăn thử thách, xây dựng đất nước cộng sản, tăng cường ổn định chính trị, đẩy lùi tiêu cực và bất công xã hội.","Vượt khó khăn thử thách, xây dựng đất nước cộng sản, ổn định và phát triển kinh tế - xã hội, tăng cường ổn định chính trị, đẩy lùi tiêu cực và bất công xã hội, đưa nước ta cơ bản ra khỏi tình trạng khủng hoảng.","Vượt khó khăn thử thách, ổn định và phát triển kinh tế - xã hội, tăng cường ổn định chính trị, đưa đất nước tiến đến phát triển nông nghiệp."], ans: 0 },
+    { type: 'mc', q: "Đại hội VII của Đảng là:", options: ["“Đại hội của sáng tạo - đổi mới - dân chủ - kỷ cương - đoàn kết\"","“Đại hội của trí tuệ - đổi mới - dân chủ - kỷ cương - đoàn kết\"","“Đại hội của sáng tạo - phát triển - dân chủ - kỷ cương - đoàn kết”","“Đại hội của trí tuệ - phát triển - dân chủ - kỷ cương - đoàn kết\""], ans: 1 },
+    { type: 'fitb', q: "Đảng lấy chủ nghĩa Mác - Lênin và tư tưởng Hồ Chí Minh làm \_\_\_\_\_ cho hành động.", correctAnswer: "nền tảng tư tưởng, kim chỉ nam" },
+    { type: 'mc', q: "Việt Nam và Trung Quốc thiết lập lại và bình thường hóa mối quan hệ giữa 2 nước vào thời gian nào?", options: ["2/1991","7/1991","10/1991","11/1991"], ans: 3 },
+    { type: 'mc', q: "Việt Nam và Hoa Kỳ thiết lập lại quan hệ ngoại giao vào năm nào?", options: ["1993","1995","1997","2001"], ans: 1 },
     { type: 'mc', q: "BCH Trung ương Đại hội VII ra chỉ đạo đổi mới toàn diện, trong đó coi đâu là Mặt trận hàng đầu?", options: ["Công nghiệp","Nông nghiệp","Thương nghiệp","Cả a, b, c"], ans: 1 },
-    { type: 'mc', q: "“Xây dựng xong về cơ bản những cơ sở kinh tế của chủ nghĩa xã hội, với kiến trúc thượng tầng về chính trị và tư tưởng, văn hóa phù hợp, làm cho nước ta trở thành một nước xã hội chủ nghĩa phồn vinh” là:", options: ["Mục tiêu lâu dài của Cương lĩnh xây dựng đất nước trong thời kỳ quá độ lên chủ nghĩa xã hội","Mục tiêu tổng quát của Cương lĩnh năm 1991","Mục tiêu cấp thiết của Chiến lược ổn định và phát triển kinh tế- xã hội đến năm 2000","Mục tiêu quan trọng của Chiến lược ổn định và phát triển kinh tế xã hội đến năm 2000"], ans: 1 },
-    { type: 'fitb', q: "Điền từ còn thiếu vào chỗ trống sau: “lấy liên minh giai cấp …,giai cấp … và … làm nền tảng do Đảng Cộng sản lãnh đạo. Thực hiện đủ quyền làm chủ của nhân dân”", correctAnswer: "công nhân, nông dân, tầng lớp trí thức" },
+    { type: 'fitb', q: "“Đại hội VII là Đại hội của \_\_\_\_\_ dân chủ - kỷ cương - đoàn kết\"", correctAnswer: "trí tuệ - đổi mới" },
+    { type: 'mc', q: "Đại hội Đảng toàn quốc lần thứ VII đã thông qua những văn kiện nào?", options: ["Báo cáo chính trị, báo cáo tổng kết công tác xây dựng Đảng","Cương lĩnh xây dựng đất nước trong thời kỳ quá độ lên chủ nghĩa xã hội, Chiến lược ổn định và phát triển kinh tế - xã hội đến năm 2000","Báo cáo chính trị, nghị quyết về nhiệm vụ và đường lối của Đảng trong giai đoạn mới","Phương hướng, nhiệm vụ, kế hoạch phát triển kinh tế-xã hội 5 năm 1996-2000, Điều lệ Đảng (bổ sung, sửa đổi)"], ans: 1 },
+    { type: 'mc', q: "Nội dung nào không có trong đại hội Đảng toàn quốc lần thứ VII?", options: ["Xác định 7 phương hướng lớn xây dựng chủ nghĩa xã hội","Chỉ ra những thành công, khuyết điểm, sai lầm trong hơn 60 năm lãnh đạo của Đảng","Nêu ra 6 bài học chủ yếu trong 10 năm đổi mới","Thông qua “chiến lược ổn định và phát triển kinh tế - xã hội đến năm 2000\""], ans: 2 },
+    { type: 'mc', q: "Điền từ còn thiếu vào chỗ trống: “Nghị quyết Đại hội VII của Đảng đã đưa ra quan điểm coi ... là nhân tố quyết định, là động lực to lớn, là chủ thể sáng tạo mọi nguồn của cải, vật chất là tinh thần của xã hội, là mục tiêu phấn đấu cao nhất của Đảng”", options: ["Nhân dân","Con người","Khoa học, kỹ thuật","Kinh tế"], ans: 1 },
+    { type: 'mc', q: "Điền từ còn thiếu vào chỗ trống: “Trong hệ thống chính trị, ...... là một bộ phận và là tổ chức lãnh đạo hệ thống đó, lấy Chủ nghĩa Mác - Lênin và Tư tưởng Hồ Chí Minh làm nền tảng tư tưởng, kim chỉ nam cho hành động, lấy ...... làm nguyên tắc tổ chức cơ bản.\"", options: ["Nhà nước - đa số thắng thiểu số","Chính phủ - phê bình và tự phê bình","Đảng Cộng sản - tập trung dân chủ","Nhân dân - tập trung dân chủ"], ans: 2 },
+    { type: 'mc', q: "Chiến lược ổn định và phát triển kinh tế - xã hội đến năm 2000 do Đại hội VII thông qua nhằm mục tiêu gì?", options: ["Bình ổn xã hội, phát triển đất nước, đưa đất nước thoát ra khỏi khó khăn","Bình ổn xã hội, phát triển đất nước, đưa đất nước thoát ra khỏi nghèo nàn","Bình ổn xã hội, phát triển đất nước, đưa đất nước thoát ra khỏi cạnh tranh","Bình ổn xã hội, phát triển đất nước, đưa đất nước thoát ra khỏi kém phát triển"], ans: 0 },
+    { type: 'mc', q: "Quan hệ đối ngoại và hội nhập quốc tế của Việt Nam sau Đại hội VII có những điểm gì?", options: ["Ngày càng sâu rộng và toàn diện; vị thế, uy tín của Việt Nam trên trường quốc tế được tăng cường.","Ngày càng toàn diện và sâu sắc; vị thế, uy tín của Việt Nam trên trường quốc tế được tăng cường.","Ngày càng sâu rộng và hiệu quả; vị thế, uy tín của Việt Nam trên trường quốc tế được nâng cao.","Ngày càng bền vững và phát triển; vị thế, uy tín của Việt Nam trên trường quốc tế được nâng cao."], ans: 2 },
+    { type: 'mc', q: "Hội nghị Trung ương 5 khóa VII đã ban hành Nghị quyết nào về tiếp tục đổi mới và phát triển kinh tế - xã hội nông thôn?", options: ["Nghị quyết số 02-NQ/TW","Nghị quyết số 03-NQ/TW","Nghị quyết số 04-NQ/TW","Nghị quyết số 05-NQ/TW"], ans: 3 },
+    { type: 'mc', q: "“Xây dựng xong về cơ bản những cơ sở kinh tế của chủ nghĩa xã hội, với kiến trúc thượng tầng về chính trị và tư tưởng, văn hóa phù hợp, làm cho nước ta trở thành một nước xã hội chủ nghĩa phồn vinh là:", options: ["Mục tiêu lâu dài của Cương lĩnh xây dựng đất nước trong thời kỳ quá độ lên chủ nghĩa xã hội","Mục tiêu tổng quát của Cương lĩnh năm 1991","Mục tiêu cấp thiết của Chiến lược ổn định và phát triển kinh tế- xã hội đến năm 2000","Mục tiêu quan trọng của Chiến lược ổn định và phát triển kinh tế xã hội đến năm 2000"], ans: 1 },
+    { type: 'mc', q: "Khẳng định nào sau đây là của Đại hội VII về lĩnh vực kinh tế?", options: ["Nền kinh tế bước đầu chuyển biến tích cực","Thu nhập quốc dân tăng và giải quyết được nạn đói","Nhịp độ phát triển kinh tế cao","Cần phát triển kinh tế tập thể và chủ trương xác lập môi trường thể chế"], ans: 0 },
+    { type: 'mc', q: "Điền tiếp vào chỗ trống: Đại hội đại biểu toàn quốc lần thứ VII đã khẳng định: \"Việt Nam muốn là bạn với tất cả các nước trong cộng đồng thế giới, phấn đấu vì ... và ...\"", options: ["Độc lập - tự do - hạnh phúc","Hòa bình - độc lập - phát triển","Hòa bình - hữu nghị - phát triển","Độc lập - hòa bình - tự do"], ans: 1 },
+    { type: 'mc', q: "Kế hoạch 5 năm 1991-1995 không có nội dung nào sau đây:", options: ["Đẩy lùi và kiểm soát lạm phát","Ổn định phát triển và nâng cao hiệu quả nền sản xuất xã hội","Bước đầu tạo ra một cơ cấu kinh tế hợp lý","Bắt đầu có tích lũy từ nội bộ nền kinh tế."], ans: 2 },
+    { type: 'mc', q: "Điền từ còn thiếu vào chỗ trống sau: “lấy liên minh giai cấp..., giai cấp ... và ... làm nền tảng do Đảng Công sản lãnh đạo. Thực hiên đủ quyền làm chủ của nhân dân”", options: ["công nhân, địa chủ, giai cấp tiểu tư sản","địa chủ, nông dân, giai cấp trí thức","công nhân, nông dân, giai cấp trí thức","công nhân, nông dân, tầng lớp trí thức"], ans: 3 },
+    { type: 'mc', q: "Đại hội VII lần đầu tiên thông qua Chiến lược ổn định và phát triển KT-XH đến năm 2000, trong đó xác định mục tiêu tổng quát đến năm 2000 là:", options: ["Ra khỏi khủng hoảng, ổn định nền kinh tế xã hội, phấn đấu tình trạng nước nghèo và kém phát triển","Trở thành nước đang phát triển có thu nhập trung bình thấp, có nền công nghiệp hiện đại phát triển","Đổi mới cơ chế quản lý, xóa bỏ cơ chế tập trung quan liêu, hành chính, bao cấp, chuyển sang hạch toán, kinh doanh, kết hợp kế hoạch với thị trường","Đổi mới cơ chế quản lý kinh tế, giải quyết những vấn đề cấp bách về phân phối lưu thông"], ans: 0 },
     { type: 'mc', q: "Nhận định nào sau đây không đúng khi nói về Đại hội VII?", options: ["Coi nông nghiệp là mặt trận hàng đầu và có cách nhìn toàn diện","Tạo điều kiện cho mọi người có cuộc sống ấm no hạnh phúc","Cần thiết phát triển kinh tế tập thể.","Hình thành nền kinh tế hàng hóa thành phần, vận động theo cơ chế thị trường, có sự quản lý của Nhà nước, theo định hướng xã hội chủ nghĩa"], ans: 2 },
-    { type: 'mc', q: "Kế hoạch 5 năm 1991-1995 không có nội dung nào sau đây:", options: ["Đẩy lùi và kiểm soát lạm phát","Ổn định phát triển và nâng cao hiệu quả nền sản xuất xã hội","Bước đầu tạo ra một cơ cấu kinh tế hợp lí","Bắt đầu có tích lũy từ nội bộ nền kinh tế."], ans: 2 },
-    { type: 'fitb', q: "Điền từ còn thiếu vào chỗ trống: “Nghị quyết Đại hội VII của Đảng đã đưa ra quan điểm coi …… là nhân tố quyết định, là động lực to lớn, là chủ thể sáng tạo mọi nguồn của cải, vật chất là tinh thần của xã hội, là mục tiêu phấn đấu cao nhất của Đảng”", correctAnswer: "Con người" },
-    { type: 'mc', q: "Đại hội VII họp trong bối cảnh nào của hệ thống xã hội chủ nghĩa thế giới?", options: ["Chủ nghĩa xã hội phát triển mạnh","Liên Xô giải tán, hệ thống CNXH sụp đổ.","Kinh tế thế giới tăng trưởng ổn định","Chiến trạnh lạnh"], ans: 1 },
-    { type: 'fitb', q: "Đảng ta lần đầu tiên khẳng định tại Đại hội Đảng toàn quốc lần thứ 7: “Đảng lấy chủ nghĩa Mác - Lênin và….. làm nền tảng tư tưởng, kim chỉ nam, lấy tập trung dân chủ.làm nguyên tắc tổ chức cơ bản.", correctAnswer: "tư tưởng hồ chí minh" },
-    { type: 'mc', q: "Số lượng Đại biểu tham dự đại hội VII(6/1991) là?", options: ["1176 đại biểu","1377 đại biểu","1347 đại biểu","1276 đại biểu"], ans: 0 },
-    { type: 'mc', q: "Theo quan điểm của Đảng sau Đại hội VII, nhiệm vụ củng cố quốc phòng và giữ vững an ninh quốc gia thuộc về:", options: ["Quân đội nhân dân","Công an nhân dân","Toàn Đảng, toàn dân và toàn quân","Riêng Nhà nước và Chính phủ"], ans: 2 },
-    { type: 'mc', q: "“Diễn biến hòa bình” theo tài liệu được hiểu là:", options: ["Xâm lược quân sự trực tiếp","Âm mưu thâm nhập, phá hoại từ bên trong bằng biện pháp phi vũ trang","Tuyên truyền hòa bình giữa các dân tộc","Chống khủng bố quốc tế"], ans: 1 },
-    { type: 'mc', q: "Thời điểm Việt Nam bình thường hóa quan hệ với Trung Quốc là:", options: ["1990","1991","1995","1989"], ans: 1 },
+    { type: 'mc', q: "Đâu là quan điểm trong Đại hôi Đại biểu toàn quốc lần thứ VII của Đảng Công sản Việt Nam?", options: ["Đảng gắn liền với việc xây dựng và thực hiện thắng lợi Cương lĩnh, chiến lược và công cuộc đổi mới","Vân dụng quan điểm của Lenin coi nền kinh tế có cơ cấu nhiều thành phần và là một đặc trưng của thời kỳ quá độ","Theo quy luật về sự phù hợp giữa quan hệ sản xuất với tính chất và trình độ của lực lượng sản xuất","Công nghiệp hóa, hiện đại hóa là sự nghiệp của toàn dân, của mọi thành phần kinh tế, trong đó kinh tế nhà nước là chủ đạo"], ans: 0 },
+    { type: 'mc', q: "Đại hôi Đại biểu toàn quốc lần thứ VII của Đảng Công sản Việt Nam đã đề ra bao nhiêu phương hướng trong Cương lĩnh?", options: ["4","5","6","7"], ans: 3 },
+    { type: 'mc', q: "Đâu không phải là vấn đề quan trọng mà Hôi nghị lần thứ ba của Đại hội VII đã thảo luận?", options: ["Tình hình thế giới và chính sách đối ngoại","Củng cố quốc phòng, giữ vững an ninh quốc gia","Đổi mới và chỉnh đốn Đảng","Đa dạng hóa và bảo tồn văn hóa nước nhà"], ans: 3 },
+    { type: 'mc', q: "Đâu là 3 nội dung tiến hành đổi mới được Đại hôi Đại biểu toàn quốc lần thứ VII của Đảng Công sản Việt Nam đề cập đến?", options: ["quốc phòng, an ninh, đối ngoại","văn hóa, kinh tế, chính trị","đối ngoại, xã hôi, văn hóa","văn hóa, quốc phòng, an ninh"], ans: 0 },
+    { type: 'mc', q: "Đâu không phải là nôi dung văn hóa trong Đại hội Đại biểu toàn quốc lần thứ VII của Đảng Công sản Việt Nam?", options: ["Kế thừa và phát huy những truyền thống văn hoá tốt đẹp của tất cả các dân tộc trong nước, tiếp thu những tinh hoa văn hoá nhân loại","Sự nghiệp văn hóa, giáo dục phải được tiếp tục phát triển và nâng cao chất lượng","Xây dựng đất nước có nền văn hóa tiên tiến, đâm đà bản sắc dân tộc","Lấy chủ nghĩa Mác-Lênin, tư tưởng Hồ Chí Minh là nền tảng trong đời sống tỉnh thần xã hội."], ans: 1 },
+    { type: 'mc', q: "Điền từ còn thiếu vào chỗ trống để tạo thành một mệnh đề đúng: “Văn hóa trong Đại hôi Đại biểu toàn quốc lần thứ VII của Đảng Công sản Việt Nam mặc dù được ... nhưng chưa được...\"", options: ["tập trung phát triển, như ý muốn","quan tâm phát triển, xem là vấn đề trọng tâm","quan tâm phát triển, xem là vấn đề đáng quan ngại","tập trung phát triển, xem là vấn đề trọng tâm"], ans: 1 },
+    { type: 'fitb', q: "Đến cuối năm \_\_\_\_\_, Việt Nam có quan hệ ngoại giao với 160 nước.", correctAnswer: "1995" },
+    { type: 'mc', q: "Đại hội VII họp trong bối cảnh nào của hệ thống XHCN thế giới?", options: ["CNXH thế giới sụp đổ.","CNXH thế giới phát triển nhanh chóng.","CNXH thế giới mới hình thành.","CNXH thế giới chưa hình thành"], ans: 0 },
+    { type: 'mc', q: "Đại hội VII đã thông qua Cương lĩnh chính trị lần thứ mấy của Đảng, và đó là cương lĩnh nào?", options: ["Lần thứ 4, Cương lĩnh 1991.","Lần thứ 5, Cương lĩnh 1991.","Lần thứ 6, Cương lĩnh 1991.","Lần thứ 7, Cương lĩnh 1991."], ans: 0 },
+    { type: 'mc', q: "Đặc trưng về chính trị của CNXH trong Cương lĩnh 1991 là gì?", options: ["Giai cấp công nhân làm chủ.","Giai cấp nông dân làm chủ.","Giai cấp tư sản làm chủ.","Nhân dân lao động làm chủ."], ans: 3 },
+    { type: 'mc', q: "Đặc trưng về kinh tế của CNXH trong Cương lĩnh 1991 là gì?", options: ["Kinh tế phát triển toàn diện.","Kinh tế thị trường.","Kinh tế phát triển cao.","Kinh tế phát triển ổn định"], ans: 2 },
+    { type: 'fitb', q: "Mục tiêu phấn đấu cao nhất của Đảng được Hội nghị giữa nhiệm kỳ (1/1994) khóa VII xác định là \_\_\_\_\_ của con người.", correctAnswer: "hạnh phúc" },
 ];
 
+const supplementaryQuestions = [
+    { type: 'mc', q: "Đơn vị tiền tệ của Việt Nam là gì?", options:["Đồng","VND","VNĐ","Tất cả đều đúng"], ans: 3 },
+    { type: 'fitb', q: "Sông dài nhất thế giới là \_\_\_\_\_.", correctAnswer: "sông Nile" },
+    { type: 'mc', q: "Núi cao nhất Việt Nam?", options:["Fansipan","Phú Sĩ","Everest"], ans: 0 },
+    { type: 'fitb', q: "Thủ đô của Việt Nam là \_\_\_\_\_.", correctAnswer: "Hà Nội" },
+    { type: 'mc', q: "Hành tinh nào gần Mặt trời nhất?", options:["Trái Đất","Sao Thủy","Sao Hỏa"], ans: 1 },
+    { type: 'mc', q: "Châu lục nào lớn nhất?", options:["Châu Á","Châu Âu","Châu Phi"], ans: 0 },
+    { type: 'fitb', q: "Số π xấp xỉ \_\_\_\_\_.", correctAnswer: "3.14" },
+    { type: 'mc', q: "Mặt trời là gì?", options:["Hành tinh","Sao","Nguyệt"], ans: 1 },
+    { type: 'mc', q: "2*3 = ?", options:["5","6","7"], ans: 1 },
+    { type: 'mc', q: "Màu của bầu trời?", options:["Xanh","Đỏ","Vàng"], ans: 0 },
+    { type: 'mc', q: "Văn Miếu - Quốc Tử Giám được xây dựng vào triều đại nào?", options:["Lý","Trần","Hồ","Lê"], ans: 0 },
+    { type: 'mc', q: "Đại dương lớn nhất trên thế giới?", options:["Thái Bình Dương","Đại Tây Dương","Ấn Độ Dương"], ans: 0 },
+    { type: 'fitb', q: "Tổng thống đầu tiên của Hoa Kỳ là \_\_\_\_\_.", correctAnswer: "George Washington" },
+];
+
+let masterQuestions = [...officialQuestions];
+if (masterQuestions.length < 50) {
+    masterQuestions = masterQuestions.concat(supplementaryQuestions);
+}
+while (masterQuestions.length < 50) {
+    masterQuestions = masterQuestions.concat(officialQuestions.slice(0, 50 - masterQuestions.length));
+}
 
 const BOARD_SIZE = 5;
-
-// Gán 25 câu hỏi mới cho Bảng 1 (index 0-24) và 25 câu hỏi mới cho Bảng 2 (index 25-49)
-let masterQuestions = [...team1Questions];
-masterQuestions = masterQuestions.concat(team2Questions);
-
 
 function createBoard(boardId) {
     const board = document.getElementById(boardId);
@@ -602,9 +595,9 @@ function createBoard(boardId) {
             let questionIndex;
 
             if (boardId === 'board1') {
-                questionIndex = cellIndex; // Index 0-24 (Bảng 1)
+                questionIndex = cellIndex;
             } else {
-                questionIndex = cellIndex + (BOARD_SIZE * BOARD_SIZE); // Index 25-49 (Bảng 2)
+                questionIndex = cellIndex + (BOARD_SIZE * BOARD_SIZE);
             }
 
             if (masterQuestions[questionIndex]) {
